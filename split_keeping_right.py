@@ -1,7 +1,7 @@
 from PyPDF2 import PdfReader, PdfWriter, Transformation, PageObject
 
 # Open the original PDF
-input_pdf_path = "full.pdf"  # Path to the original PDF file
+input_pdf_path = "full_original.pdf"  # Path to the original PDF file
 output_pdf_path = "out_full.pdf"  # Path where the duplicated PDF will be saved
 
 # Initialize the reader and writer
@@ -11,6 +11,8 @@ pdf_writer = PdfWriter()
 # Add each page from the original PDF to the writer
 for page_num in range(0, len(pdf_reader.pages)):
     page = pdf_reader.pages[page_num]
+    page.mediabox.upper_left = page.mediabox.width // 2, 0
+    new_page = PageObject.create_blank_page(page.mediabox.width / 2, page.mediabox.height)
     page.add_transformation(Transformation().translate(-page.mediabox.width / 2, 0))
     pdf_writer.add_page(page)
 

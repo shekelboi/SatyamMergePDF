@@ -25,12 +25,22 @@ def extract_from_pdf(input, output, side):
         page = pdf_reader.pages[page_num]
 
         new_page = PageObject.create_blank_page(pdf_writer, page.mediabox.width, page.mediabox.height)
-        page.mediabox.upper_right = page.mediabox.width / 2, page.mediabox.height
+
+        if side == 'left':
+            page.mediabox.upper_right = page.mediabox.width / 2, page.mediabox.height
+        else:
+            page.add_transformation(Transformation().translate(-page.mediabox.width / 2, 0))
+
         new_page.merge_page(page)
 
         if page_num + 1 < len(pdf_reader.pages):
             other_page = pdf_reader.pages[page_num + 1]
-            other_page.add_transformation(Transformation().translate(other_page.mediabox.width / 2, 0))
+
+            if side == 'left':
+                other_page.add_transformation(Transformation().translate(other_page.mediabox.width / 2, 0))
+            else:
+                other_page.mediabox.upper_left = other_page.mediabox.width / 2, other_page.mediabox.height
+                
             new_page.merge_page(other_page)
 
         pdf_writer.add_page(new_page)
